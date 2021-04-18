@@ -1,17 +1,24 @@
 #!/usr/bin/env bash
 
+#check for URL input errors
+if ((echo $1 | grep 'Moved Permanently')|| (echo $1 | grep 'Not Found')); then
+    printf "Wrong URL"
+    exit
+fi
 
-REPO=$1
+
 URL=$1
-URL=$(echo $URL | cut -c 20-)
+#remove unneeded part
+URL=$(echo $URL | cut -f-5 -d"/" | cut -c 20-)
+REPO=$URL
 NAME=$(echo $URL | sed 's/\/.*//')
 PROYECT=$(echo $URL | cut -f2 -d"/")
-PROYECT=../api-forks-$PROYECT
+FOLDER=../api-forks-$PROYECT
 PREFIX=https://api.github.com/repos/
 SCRIPTS=../forks-that-are-active
 
-mkdir -p $PROYECT
-cd $PROYECT
+mkdir -p $FOLDER
+cd $FOLDER
 
 attemptagain(){
     #tells the user to attempt again IF the getpages returned a "API limit reached" fetch
@@ -32,7 +39,7 @@ getpages(){
         FILE=$pagesname$j
         if [ ! -f $FILE ];then
             URLatt=$1'?per_page=90&page='$j
-            echo $URLatt
+            #echo $URLatt
             curl --silent -H "Accept: application/vnd.github.v3+json" $URLatt > $FILE
             #check if github API still ok, also deletes the file if not to retrieve a correct one later
             attemptagain $FILE
@@ -51,12 +58,12 @@ getpages(){
 
 #the root page fetch is different from the rest, this is 'raw' while the others fetch the 'forks'
 i=-root
-if [ ! -f index-root ]; then
-    URLatt=$PREFIX$URL
-    getpages $URLatt '1'
-    cat rawfetch$i | grep watchers_count | cut -c 21- | sed 's/,//' > stars$i
-    cat rawfetch$i | grep updated_at | cut -c 18- | cut -c -10 > update$i
-    echo $NAME > url$i
+if [ ! -f index$i ]; then
+    curl --silent -H "Accept: application/vnd.github.v3+json" $PREFIX$URL > rawfetch$i
+    attemptagain rawfetch$i
+    cat rawfetch$i | grep watchers_count | head -n 1 | cut -c 21- | sed 's/,//' > stars$i
+    cat rawfetch$i | grep updated_at | head -n 1 | cut -c 18- | cut -c -10 > update$i
+    echo $NAME/$PROYECT > url$i
     echo 0 > index$i
 fi
 
@@ -71,30 +78,16 @@ parse (){
         # | awk '$0=""$0'
         cat rawfetch$i | grep stargazers_c | cut -c 25- | sed 's/,//'  > stars$i
         cat rawfetch$i | grep updated_at | cut -c 20- | cut -c -10 > update$i
-
-        echo 0 > index$i
+        touch index$i
     fi
-    #loads the counter stored at index$i
-    m=$(cat index$i)
-    n=0
     cat url$i | while read l; do
-        if (("$n"-gt"$m")); then
-            continue
-        fi
-        n=$(($n+1))
-
         NAME=$(echo $l | sed 's/\/.*//')
         l=$PREFIX$l'/forks'
-
         parse "$l" "$NAME"
-        echo $n > index$i
     done
-    echo index$i
-    rm index$i
 }
 
 URL=$PREFIX$URL'/forks'
-echo $NAME
 parse "$URL" "$NAME"
 
 cat apiurl* > fapiurl
@@ -111,6 +104,4 @@ echo -e "lastseen\tstars\tusername\n$(cat output)" > output
 
 
 
-#rm  apiurl* url* stars* update* f*
-
-#further
+#rm  apiurl* url* stars* update* index* f*
