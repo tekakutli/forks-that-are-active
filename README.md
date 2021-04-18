@@ -1,4 +1,4 @@
-# forks-that-are-updated
+# forks-that-are-active
 see which forks of a given github repository are active
 
 # usage
