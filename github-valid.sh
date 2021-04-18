@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 COMMAND=$2
-
 #check if retrieved file is still valid
 if (grep -q 'API rate limit exceeded' "$1" || [ ! -s $1 ] );then
 #if (grep -q 'API rate limit exceeded' "$VARO" || cmp -s $VARO ../github-api/vacum);then
