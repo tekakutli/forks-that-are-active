@@ -10,7 +10,7 @@ all those files are a 'state', incrementally used to parse the final query
 this state design was chosen due to github-api download limit
 if you see a "API limit reached" message just re-run the script some time later, nothing already downloaded will be re-downloaded
 
-* jp was not used because I needed to use $ cut some things either way
+* jp was not used because I needed to use $ cut for some things either way
 * no database was used because this is meant to be an easy thing
 
 btw you can increase the github-API download limit this way:
