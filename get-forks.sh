@@ -8,6 +8,7 @@ NAME=$(echo $URL | sed 's/\/.*//')
 PROYECT=$(echo $URL | cut -f2 -d"/")
 PROYECT=../api-forks-$PROYECT
 PREFIX=https://api.github.com/repos/
+SCRIPTS=../forks-that-are-active
 
 mkdir -p $PROYECT
 cd $PROYECT
@@ -15,7 +16,7 @@ cd $PROYECT
 attemptagain(){
     #tells the user to attempt again IF the getpages returned a "API limit reached" fetch
     COMMAND='bash get-forks.sh '$REPO
-    bash ../github-api/github-valid.sh $1 "$COMMAND"
+    bash $SCRIPTS/github-valid.sh $1 "$COMMAND"
     if  [ -f exit-everything ]; then
         rm $1
         rm exit-everything
@@ -36,7 +37,7 @@ getpages(){
             #check if github API still ok, also deletes the file if not to retrieve a correct one later
             attemptagain $FILE
             #chek if finally the end
-            if cmp -s $FILE ../github-api/empty;then
+            if cmp -s $FILE $SCRIPTS/empty;then
                 rm $FILE
                 break
             fi
@@ -88,6 +89,8 @@ parse (){
         parse "$l" "$NAME"
         echo $n > index$i
     done
+    echo index$i
+    rm index$i
 }
 
 URL=$PREFIX$URL'/forks'
