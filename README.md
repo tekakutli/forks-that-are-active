@@ -4,6 +4,10 @@ see which forks of a given github repository are active
 # usage
 * cd forks-that-are-updated
 * bash get-forks.sh https://github.com/#owner#/#repository#
+
+# data
+* ../api-forks-#repository is the incremental state
+* ../forks-#repository#  is the final query
   
 This will create a folder just outside the repo, named api-forks-#repository#  
 All the files there are a 'state', incrementally used to parse the final query, this state design was chosen due to github-api download limit  
