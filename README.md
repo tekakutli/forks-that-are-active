@@ -5,7 +5,7 @@ see which forks of a given github repository are active
 * cd forks-that-are-updated
 * bash get-forks.sh https://github.com/#owner#/#repository#
   
-this will create a folder just outside the repo, named api-forks-<repository>
+this will create a folder just outside the repo, named api-forks-#repository#
 all those files are a 'state', incrementally used to parse the final query
 this state design was chosen due to github-api download limit
 if you see a "API limit reached" message just re-run the script some time later, nothing already downloaded will be re-downloaded
