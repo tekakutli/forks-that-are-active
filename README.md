@@ -1,5 +1,5 @@
 # forks-that-are-updated
-see which forks of a given github repository are updated
+see which forks of a given github repository are active
 
 # usage
 cd forks-that-are-updated
