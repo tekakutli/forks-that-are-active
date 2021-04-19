@@ -24,16 +24,12 @@ printf "[\n\n]\n" > empty
 attemptagain(){
     #tells the user to attempt again IF the getpages returned a "API limit reached" fetch
     COMMAND='bash get-forks.sh '$REPO
-    bash $SCRIPTS/github-valid.sh $1 "$COMMAND"
-    if  [ -f exit-everything ]; then
-        rm $1
-        rm exit-everything
-        exit
-    fi
+    bash $SCRIPTS/github-valid.sh $1 "$COMMAND" || exit 1
 }
 
 #loop to get each github pages with fork info, when receives an empty one it stops, it saves the state
 getpages(){
+    echo $i
     pagesname=rawfetch$i-pages-
     for  (( j=1; j<= $2 ; j++))
     do
